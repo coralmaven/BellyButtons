@@ -4,7 +4,9 @@ async function buildMetadata(sample) {
   sampleMetadata.html("");
   metadata = await d3.json("/metadata/".concat(sample));
   for ( var key in metadata){
-    sampleMetadata.append("tr").text(key.concat(": ").concat(metadata[key].toString()));
+    sampleMetadata.append("tr")
+          .text(key.concat(": ")
+          .concat(metadata[key].toString()));
   };
   
   // Build the Gauge Chart
