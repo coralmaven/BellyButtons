@@ -14,67 +14,87 @@ async function buildMetadata(sample) {
 }
 
 async function buildGauge(frequency){
-console.log(frequency);
+  
+  let data = [{
+    values: [1,1,1,1,1,1,1,1,1,9],
+    rotation: 90,
+    text: ['0-1','1-2','2-3','3-4','4-5','5-6','6-7','7-8','8-9'],
+    textinfo: 'text',
+    textposition: 'inside',
+    marker: {
+      colors: [ 'rgba(110, 154, 22, .5)',
+                'rgba(14, 127, 0, .5)',
+                'rgba(110, 154, 22, .5)',
+                'rgba(14, 127, 0, .5)',
+                'rgba(110, 154, 22, .5)',
+                'rgba(14, 127, 0, .5)',
+                'rgba(110, 154, 22, .5)',
+                'rgba(14, 127, 0, .5)',
+                'rgba(110, 154, 22, .5)',
+                'rgba(0, 0, 0, 0)'
+      ]
+    },
+    hoverinfo: false,
+    hole: .5,
+    type: 'pie',
+    showlegend: false,
+    direction: "clockwise"
+  }];
+  
 
-let data = [{
-  values: [1,1,1,1,1,1,1,1,1,9],
-  rotation: 90,
-  //text: ['8-9','7-8','6-7','5-6','4-5','3-4','2-3','1-2','0-1'],
-  text: ['0-1','1-2','2-3','3-4','4-5','5-6','6-7','7-8','8-9'],
-  textinfo: 'text',
-  textposition: 'inside',
-  marker: {
-    colors: [ 'rgba(110, 154, 22, .5)',
-              'rgba(14, 127, 0, .5)',
-              'rgba(110, 154, 22, .5)',
-              'rgba(14, 127, 0, .5)',
-              'rgba(110, 154, 22, .5)',
-              'rgba(14, 127, 0, .5)',
-              'rgba(110, 154, 22, .5)',
-              'rgba(14, 127, 0, .5)',
-              'rgba(110, 154, 22, .5)',
-              'rgba(0, 0, 0, 0)'
-    ]
-  },
-  hoverinfo: false,
-  hole: .5,
-  type: 'pie',
-  showlegend: false,
-  direction: "clockwise"
-}];
+  // Trig to calc meter point
+  var degrees = d3.scaleLinear()
+    .domain([0,9])
+    .range([180,0]);
 
-let layout = {
-  title: '<b>Belly Button Washing Frequency</b><br>Scrubs per Week',
-  height: 600,
-  width: 600,
-  xaxis: {
-    zeroline: false,
-    showticklabels: false,
-    showgrid: false,
-    fixedrange: true,
-    range: [-1, 1]
-  },
+  
+let slicetext = d3.select(".pielayer").selectAll(".slicetext").data(t => function(t){
+  return t.select("text").attr("transform");
+})
+  
+console.log(slicetext);
 
-  yaxis: {
-    zeroline: false,
-    showticklabels: false,
-    showgrid: false,
-    fixedrange: true,
-    range: [-1, 1]
-  }
-};
+  var pointerCoord = 
+  [    [100, 120],
+  [200, 250],
+  [300, 160],
+  [400, 200]];
+
+  var lineGenerator = d3.line();
+  var path = lineGenerator(pointerCoord);
+
+  let layout = {
+    shapes:[{
+      type: 'path',
+      path: path,
+      fillcolor: '850000',
+      line: {
+        color: '850000'
+      }
+    }],
+
+    title: '<b>Belly Button Washing Frequency</b><br>Scrubs per Week',
+    height: 600,
+    width: 600,
+    xaxis: {
+      zeroline: false,
+      showticklabels: false,
+      showgrid: false,
+      fixedrange: true,
+      range: [-1, 1]
+    },
+  
+    yaxis: {
+      zeroline: false,
+      showticklabels: false,
+      showgrid: false,
+      fixedrange: true,
+      range: [-1, 1]
+    }
+  };
 
 Plotly.newPlot('gauge', data, layout);
-s = d3.select("#gauge.pielayer").selectAll(".slice")
-    .filter(d3.matcher("1-2"));
-console.log(s.select("path.surface"))
  
-// add the gauge pointer
-// use the frequency value to figure out the slice to point to
-// find the center of the guage arccircle.
-// The draw a svg line from the center of the arc to the slicetext.
-// or to the path of the slice.
-
 }
 
 async function buildCharts(sample) {
@@ -94,9 +114,7 @@ async function buildCharts(sample) {
       size: sampledata.sample_values
     }
   };
-  
-  var data = [trace];
-  
+   
   var layout = {
     title: 'Bubble Chart',
     showlegend: true,
@@ -104,12 +122,12 @@ async function buildCharts(sample) {
     width: 600
   };
   
-  Plotly.newPlot('bubble', data, layout);
+  Plotly.newPlot('bubble', [trace], layout);
 
   //Pie Chart
   data = [{
-    "labels": sampledata.otu_ids.slice(0,9),
-    "values": sampledata.sample_values.slice(0,9),
+    "labels": sampledata.otu_ids.slice(0,10),
+    "values": sampledata.sample_values.slice(0,10),
     "type": "pie"}]
   var layout = {title : "Pie chart"}
   Plotly.plot("pie", data, layout);
@@ -145,4 +163,5 @@ function optionChanged(newSample) {
 }
 
 // Initialize the dashboard
+
 init();
