@@ -16,7 +16,8 @@ async function buildMetadata(sample) {
   metadata = await d3.json("/metadata/".concat(sample));
   for ( var key in metadata){
     sampleMetadata.append("tr")
-          .text(key + ": ${metadata[key]}")
+    .text(key.concat(": ")
+    .concat(metadata[key].toString()));
   };
   console.log(metadata);
 
