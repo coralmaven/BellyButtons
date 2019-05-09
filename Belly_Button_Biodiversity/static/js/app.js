@@ -1,105 +1,31 @@
 async function buildMetadata(sample) {
 
+  // @TODO: Complete the following function that builds the metadata panel
+
+  // Use `d3.json` to fetch the metadata for a sample
+    // Use d3 to select the panel with id of `#sample-metadata`
+
+    // Use `.html("") to clear any existing metadata
+
+    // Use `Object.entries` to add each key and value pair to the panel
+    // Hint: Inside the loop, you will need to use d3 to append new
+    // tags for each key-value in the metadata.
+
   let sampleMetadata = d3.select("#sample-metadata");
   sampleMetadata.html("");
   metadata = await d3.json("/metadata/".concat(sample));
   for ( var key in metadata){
     sampleMetadata.append("tr")
-          .text(key.concat(": ")
-          .concat(metadata[key].toString()));
+          .text(key + ": ${metadata[key]}")
   };
-  
-  // Build the Gauge Chart
+  console.log(metadata);
+
+  // BONUS: Build the Gauge Chart
   buildGauge(metadata.WFREQ);
-}
-
-async function buildGauge(frequency){
-  
-  let data = [{
-    values: [1,1,1,1,1,1,1,1,1,9],
-    rotation: 90,
-    text: ['0-1','1-2','2-3','3-4','4-5','5-6','6-7','7-8','8-9'],
-    textinfo: 'text',
-    textposition: 'inside',
-    marker: {
-      colors: [ 'rgba(110, 154, 22, .5)',
-                'rgba(14, 127, 0, .5)',
-                'rgba(110, 154, 22, .5)',
-                'rgba(14, 127, 0, .5)',
-                'rgba(110, 154, 22, .5)',
-                'rgba(14, 127, 0, .5)',
-                'rgba(110, 154, 22, .5)',
-                'rgba(14, 127, 0, .5)',
-                'rgba(110, 154, 22, .5)',
-                'rgba(0, 0, 0, 0)'
-      ]
-    },
-    hoverinfo: false,
-    hole: .5,
-    type: 'pie',
-    showlegend: false,
-    direction: "clockwise"
-  }];
-  
-
-  // Trig to calc meter point
-  var degrees = d3.scaleLinear()
-    .domain([0,9])
-    .range([180,0]);
-
-  
-let slicetext = d3.select(".pielayer").selectAll(".slicetext").data(t => function(t){
-  return t.select("text").attr("transform");
-})
-  
-console.log(slicetext);
-
-  var pointerCoord = 
-  [    [100, 120],
-  [200, 250],
-  [300, 160],
-  [400, 200]];
-
-  var lineGenerator = d3.line();
-  var path = lineGenerator(pointerCoord);
-
-  let layout = {
-    shapes:[{
-      type: 'path',
-      path: path,
-      fillcolor: '850000',
-      line: {
-        color: '850000'
-      }
-    }],
-
-    title: '<b>Belly Button Washing Frequency</b><br>Scrubs per Week',
-    height: 600,
-    width: 600,
-    xaxis: {
-      zeroline: false,
-      showticklabels: false,
-      showgrid: false,
-      fixedrange: true,
-      range: [-1, 1]
-    },
-  
-    yaxis: {
-      zeroline: false,
-      showticklabels: false,
-      showgrid: false,
-      fixedrange: true,
-      range: [-1, 1]
-    }
-  };
-
-Plotly.newPlot('gauge', data, layout);
- 
 }
 
 async function buildCharts(sample) {
 
-  // Using `d3.json` to fetch the sample data for the plots
   sampledata = await d3.json("/samples/".concat(sample));
   metadata = await d3.json("/metadata/".concat(sample));
 
@@ -117,9 +43,7 @@ async function buildCharts(sample) {
    
   var layout = {
     title: 'Bubble Chart',
-    showlegend: true,
-    height: 600,
-    width: 600
+    showlegend: true
   };
   
   Plotly.newPlot('bubble', [trace], layout);
@@ -131,9 +55,6 @@ async function buildCharts(sample) {
     "type": "pie"}]
   var layout = {title : "Pie chart"}
   Plotly.plot("pie", data, layout);
-
-    // HINT: You will need to use slice() to grab the top 10 sample_values,
-    // otu_ids, and labels (10 each).
 }
 
 async function init() {
@@ -163,5 +84,4 @@ function optionChanged(newSample) {
 }
 
 // Initialize the dashboard
-
 init();
